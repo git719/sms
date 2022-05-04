@@ -1,0 +1,35 @@
+#!/usr/bin/osascript
+# sms
+# v1.1.0
+
+on waitUntilRunning(appName, delayTime)
+  repeat until application appName is running
+    tell application appName to close window 1
+    delay delayTime
+  end repeat
+  delay delayTime
+end waitUntilRunning
+
+on run {targetBuddyPhone, targetMessage}
+  tell application "Messages"
+    # Launch Messages.app if not running
+    set wasRunning to true
+    if it is not running then
+      set wasRunning to false
+      launch
+      close window 1
+      my waitUntilRunning("Messages", 1)
+      close window 1
+    end if
+
+    # Send the message
+    set targetService to 1st service whose service type = iMessage
+    set targetBuddy to buddy targetBuddyPhone of targetService
+    send targetMessage to targetBuddy
+
+    # Close window if app wasn't originally running
+    if not wasRunning
+      close window 1
+    end if
+  end tell
+end run
